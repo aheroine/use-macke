@@ -1,0 +1,21 @@
+/home/jl/deploy/klee22/Release+Asserts/bin/klee --output-dir=/home/jl/deploy/macke/result/2019-04-16-14-54-11/klee/klee-out-1 --max-time=120 --max-instruction-time=12 --allow-external-sym-calls --libc=uclibc --max-memory=1000 --only-output-states-covering-new --optimize --disable-inlining --output-source=false --posix-runtime --watchdog --stats-write-interval=238 --istats-write-interval=238 --entry-point macke_bottom_main /home/jl/deploy/macke/result/2019-04-16-14-54-11/bitcode/symmains.bc
+PID: 12139
+Started: 2019-04-16 14:54:12
+BEGIN searcher description
+<InterleavedSearcher> containing 2 searchers:
+RandomPathSearcher
+WeightedRandomSearcher::CoveringNew
+</InterleavedSearcher>
+END searcher description
+Finished: 2019-04-16 14:54:12
+Elapsed: 00:00:00
+KLEE: done: explored paths = 2
+KLEE: done: avg. constructs per query = 9
+KLEE: done: total queries = 3
+KLEE: done: valid queries = 0
+KLEE: done: invalid queries = 3
+KLEE: done: query cex = 3
+
+KLEE: done: total instructions = 3246
+KLEE: done: completed paths = 2
+KLEE: done: generated tests = 2

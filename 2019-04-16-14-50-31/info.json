@@ -1,0 +1,1 @@
+{"macke-git-version-hash": "6d3fdbf5edcf208bd81ca421ad79d7ae99806c37", "llvm-opt-git-version-hash": "95830cb4e1416a6d1fb538f2b91d1c4720d4bde7", "klee-git-version-hash": "unknown", "analyzed-bitcodefile": "/home/jl/deploy/macke/examples/test.c", "run-argv": ["/home/jl/deploy/macke/.venv/bin/macke", "examples/test.c", "--parent-dir", "."], "comment": ""}

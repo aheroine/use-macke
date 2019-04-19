@@ -1,0 +1,4 @@
+KLEE: KLEE: WATCHDOG: watching 12289
+
+KLEE: ERROR: Cannot handle --posix-runtime when main() has less than two arguments.
+

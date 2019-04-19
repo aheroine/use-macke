@@ -1,0 +1,7 @@
+Error: ERROR FROM /home/jl/deploy/macke/result/2019-04-16-14-54-11/klee/klee-out-1/test000001.assert.err
+Stack: 
+	#000000188 in __macke_error_bottom (argno0)
+	#100000118 in right (i)
+	#200000138 in __user_main (=1, =48797424)
+	#300000326 in __uClibc_main (argc=1, argv=48797424) at /home/jl/deploy/klee-uclibc/libc/misc/internals/__uClibc_main.c:401
+	#400000547 in macke_right_main (=1, =48797424)

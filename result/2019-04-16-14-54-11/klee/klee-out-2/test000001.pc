@@ -1,0 +1,12 @@
+array argno0[4] : w32 -> w8 = symbolic
+array macke_sym_switch_bottom[4] : w32 -> w8 = symbolic
+array model_version[4] : w32 -> w8 = symbolic
+(query [(Eq 1
+             (ReadLSB w32 0 model_version))
+         (Eq false
+             (Eq 1
+                 (ReadLSB w32 0 macke_sym_switch_bottom)))
+         (Eq false
+             (Slt (ReadLSB w32 0 argno0)
+                  42))]
+        false)

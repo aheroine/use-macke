@@ -1,0 +1,18 @@
+/home/jl/deploy/klee22/Release+Asserts/bin/klee --output-dir=/home/jl/deploy/macke/result/2019-04-16-14-54-11/klee/klee-out-5 --search=sonar --sonar-target=function-call --sonar-target-info=__macke_error_left --max-time=120 --max-instruction-time=12 --allow-external-sym-calls --libc=uclibc --max-memory=1000 --only-output-states-covering-new --optimize --disable-inlining --output-source=false --posix-runtime --watchdog --stats-write-interval=238 --istats-write-interval=238 --entry-point macke_top_main /home/jl/deploy/macke/result/2019-04-16-14-54-11/bitcode/chain-top-left.bc
+PID: 12231
+Started: 2019-04-16 14:54:15
+BEGIN searcher description
+SonarDeepSearcher
+END searcher description
+Finished: 2019-04-16 14:54:15
+Elapsed: 00:00:00
+KLEE: done: explored paths = 5
+KLEE: done: avg. constructs per query = 17
+KLEE: done: total queries = 8
+KLEE: done: valid queries = 1
+KLEE: done: invalid queries = 7
+KLEE: done: query cex = 8
+
+KLEE: done: total instructions = 3311
+KLEE: done: completed paths = 5
+KLEE: done: generated tests = 2
