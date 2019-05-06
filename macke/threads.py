@@ -2,7 +2,7 @@
 All functions, that are executed in parallel threads
 """
 
-from .Klee import execute_klee, execute_klee_targeted_search
+from .Klee import execute_klee, execute_klee_targeted_search, execute_use
 
 from .Fuzzer import FuzzManager
 
@@ -35,7 +35,11 @@ def thread_phase_one(
     """
     # Just run KLEE on it
     try:
-        resultlist.append(execute_klee(
+        #jl
+        '''resultlist.append(execute_klee(
+            symmains_bc, functionname, outdir, flags, posixflags, posix4main))
+        '''
+        resultlist.append(execute_use(
             symmains_bc, functionname, outdir, flags, posixflags, posix4main))
     # pylint: disable=broad-except
     except Exception as exc:

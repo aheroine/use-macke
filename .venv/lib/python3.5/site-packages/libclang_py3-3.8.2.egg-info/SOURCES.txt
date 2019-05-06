@@ -1,0 +1,10 @@
+setup.cfg
+setup.py
+clang/__init__.py
+clang/cindex.py
+clang/enumerations.py
+libclang_py3.egg-info/PKG-INFO
+libclang_py3.egg-info/SOURCES.txt
+libclang_py3.egg-info/dependency_links.txt
+libclang_py3.egg-info/not-zip-safe
+libclang_py3.egg-info/top_level.txt

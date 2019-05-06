@@ -1,0 +1,10 @@
+#!/home/jl/deploy/macke/.venv/bin/python3
+# EASY-INSTALL-ENTRY-SCRIPT: 'macke','console_scripts','macke-analyze'
+__requires__ = 'macke'
+import sys
+from pkg_resources import load_entry_point
+
+if __name__ == '__main__':
+    sys.exit(
+        load_entry_point('macke', 'console_scripts', 'macke-analyze')()
+    )

@@ -56,6 +56,20 @@ def encapsulate_symbolic(sourcefile, function, destfile=None):
         "-encapsulatesymbolic", sourcefile,
         "-encapsulatedfunction", function, "-o", destfile])
 
+#jl add
+def change_entry(sourcefile, function, destfile=None):
+    """
+    Wrapper around the encapsulate symbolic pass
+    """
+    # If no destfile is given, just modify the source file
+    if destfile is None:
+        destfile = sourcefile
+
+    return __run_subprocess([
+        LLVMOPT, "-load", LIBMACKEOPT,
+        "-changeentrypoint", sourcefile,
+        "-newentryfunction", function, "-o", destfile])
+
 
 def prepend_error_from_dir(sourcefile, function, errordirlist, destfile=None):
     """
@@ -95,11 +109,6 @@ def prepend_error_from_ktest(sourcefile, function, ktestlist, destfile=None):
     for ktest in ktestlist:
         ktestflags.append("-errorfiletoprepend")
         ktestflags.append(ktest)
-    print("-------here-------------------")
-    print("DEBUG:",LLVMOPT, "-load", LIBMACKEOPT, "-preprenderror", sourcefile, "-prependtofunction", function)
-    print(ktestflags)
-    print("-o", destfile)
-    print("DEBUG END")
     return __run_subprocess([
         LLVMOPT, "-load", LIBMACKEOPT, "-preprenderror", sourcefile,
         "-prependtofunction", function] + ktestflags + ["-o", destfile])

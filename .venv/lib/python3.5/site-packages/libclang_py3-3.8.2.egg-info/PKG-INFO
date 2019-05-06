@@ -1,0 +1,17 @@
+Metadata-Version: 1.1
+Name: libclang-py3
+Version: 3.8.2
+Summary: Python3 bindings for libclang
+Home-page: https://bitbucket.org/Anteru/python3-libclang
+Author: Matthaeus G. Chajdas
+Author-email: dev@anteru.net
+License: License :: OSI Approved :: University of Illinois/NCSA Open Source License
+Download-URL: https://bitbucket.org/Anteru/python3-libclang/releases
+Description: UNKNOWN
+Keywords: llvm,clang,libclang
+Platform: UNKNOWN
+Classifier: Intended Audience :: Developers
+Classifier: License :: OSI Approved :: BSD License
+Classifier: Programming Language :: Python
+Classifier: Development Status :: 5 - Production/Stable
+Classifier: Topic :: Software Development :: Compilers

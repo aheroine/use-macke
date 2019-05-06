@@ -21,7 +21,7 @@ from .constants import UCLIBC_LIBS, FUZZFUNCDIR_PREFIX
 from .ErrorRegistry import ErrorRegistry
 from .Error import Error
 from .llvm_wrapper import (encapsulate_symbolic, optimize_redundant_globals,
-                           prepend_error_from_ktest)
+                           prepend_error_from_ktest,change_entry)
 from .threads import thread_phase_one, thread_fuzz_phase_one, thread_phase_two
 
 from .cgroups import get_cgroups
@@ -260,6 +260,8 @@ class Macke:
         for functionname in tasks:
             if functionname != "main":
                 encapsulate_symbolic(self.symmains_bc, functionname)
+                #encapsulate_symbolic(self.symmains_bc, functionname,self.symmains_bc+'-'+functionname+'.bc')
+                #change_entry(self.symmains_bc+'-'+functionname+'.bc','macke_'+functionname+'_main')
         self.qprint(" done")
 
 
@@ -291,6 +293,7 @@ class Macke:
                      self.errorregistry.count_functions_with_errors()))
 
         self.phase_one_summary = (self.errorregistry.count_chains(), self.errorregistry.errorcounter, self.errorregistry.count_functions_with_errors(), self.errorregistry.count_vulnerable_instructions())
+
 
     def run_phase_two(self):
         """
@@ -470,8 +473,8 @@ class Macke:
                 if self.use_fuzzer:
                     pool.apply_async(thread_fuzz_phase_one, (self.fuzz_manager, cgroups_queue, resultlist, function, path.join(self.fuzzdir, FUZZFUNCDIR_PREFIX + function), self.fuzztime))
                 else:
-                    '''print("DEBUG:",__class__,__name__,thread_phase_one, 
-                        resultlist, function, self.symmains_bc,
+                    '''print("DEBUG:","thread_phase_one=",thread_phase_one, 
+                        "\n resultlist=",resultlist,"\nfunction=", function, self.symmains_bc,
                         self.flags_user, self.posixflags, self.posix4main
                     )'''
                     pool.apply_async(thread_phase_one, (
@@ -484,7 +487,7 @@ class Macke:
             # You cannot skip anything in phase one -> 0 skips
         elif phase == 2:
             for (caller, callee) in run:
-                #print("DEBUG: caller=",caller,"callee=",callee)
+                print("DEBUG: caller=",caller,"callee=",callee)
                 kteststoprepend = (
                     self.errorregistry.to_prepend_in_phase_two(
                         caller, callee, self.exclude_known_from_phase_two))

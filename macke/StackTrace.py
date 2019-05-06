@@ -7,11 +7,15 @@ class StackTrace:
 
         self.entryFrame = 0
         for (fname, _) in stack:
+            #jl for use set all names of the entryfunc as main
+            if fname == 'main':
+                break
+            #jl --
             if fname == entryfunc:
                 break
             self.entryFrame += 1
 
-        self.stack = stack[:self.entryFrame + 1]
+        self.stack = stack[:self.entryFrame +1]
 
 
     def __eq__(self, other):

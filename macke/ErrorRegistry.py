@@ -167,6 +167,7 @@ class ErrorRegistry:
         analysis from caller. All these ktests belongs to a vulnerable
         instruction, that was not covered by an error from caller
         """
+        #print("---debug----",self.forfunction)
         if callee not in self.forfunction:
             return set()
 
@@ -176,9 +177,12 @@ class ErrorRegistry:
         #print("DEBUG: err_callee= ",err_callee)
         result = set()
         #jl not compare the err call stack of caller and callee,generate chain_bc for every chain
-        exclude_known = False
+        #if you don't want to compare the StraceTrace of the caller and callee,just set exclude_kown =False
+        #but use can make use of the call stacke comparision design now!
+        #exclude_known = False
         for err in err_callee:
             # Look whether it is already known
+            #print("err.stacktrace:",err.stacktrace)
             if exclude_known and any(err.stacktrace.is_contained_in(err2.stacktrace) for err2 in err_caller):
                 continue
             result.add(err.errfile)
