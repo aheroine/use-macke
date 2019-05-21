@@ -29,9 +29,22 @@ VALGRIND = path.expanduser(CONFIG.get("binaries", "valgrind"))
 # for symbolic execution
 LIBMACKEOPT = path.expanduser(CONFIG.get("binaries", "libmackeopt"))
 LLVMOPT = path.expanduser(CONFIG.get("binaries", "llvmopt", fallback="opt"))
+
+LIBUSEOPT = path.expanduser(CONFIG.get("binaries", "libuseopt"))
+
+LLVMOPT6 = path.expanduser(CONFIG.get("binaries", "llvmopt6", fallback="opt-6.0"))
+
 KLEEBIN = path.expanduser(CONFIG.get("binaries", "klee", fallback="klee"))
 #jl
 USEBIN = path.expanduser(CONFIG.get("binaries", "use", fallback="klee"))
+TargetFunctionFile = path.expanduser(CONFIG.get("binaries", "targetfunction", fallback="targetfunction.txt"))
+TARGETFUNCTION=[]
+fin = open(TargetFunctionFile,'r',encoding='UTF-8')
+for eachLine in fin.readlines():
+    #line = eachLine.strip().replace('\uteff','')
+    #print("eachLine=",eachLine)
+    TARGETFUNCTION.append(eachLine.strip())
+fin.close()
 # general
 THREADNUM = CONFIG.getint("runtime", "threadnum", fallback=None)
 FUZZMEMLIMIT = CONFIG.getint("runtime", "memlimit", fallback=50)

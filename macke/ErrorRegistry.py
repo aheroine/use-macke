@@ -3,7 +3,7 @@ Registry for Errors found by KLEE
 """
 from os import listdir, path
 
-from .constants import ERRORFILEEXTENSIONS
+from .constants import ERRORFILEEXTENSIONS, USEERRORFILEEXTENSIONS #jl
 from .Error import Error
 from .ErrorChain import ErrorChain
 
@@ -44,6 +44,8 @@ class ErrorRegistry:
 
             for file in listdir(kleedir):
                 if any(file.endswith(ext) for ext in ERRORFILEEXTENSIONS):
+                    #jl: use USEERRORFILEEXTENSIONS if just focus on the ctrl/data devigence
+                    #if any(file.endswith(ext) for ext in USEERRORFILEEXTENSIONS):
                     self.create_entry(path.join(kleedir, file), entryfunction)
         except AssertionError:
             print("%s is not a directory"%(kleedir))
@@ -171,7 +173,8 @@ class ErrorRegistry:
         if callee not in self.forfunction:
             return set()
 
-        err_caller = self.get_all_errors_for_func(caller)
+        #when EasyUSE execute the targetSymbolicExecution, the caller hasnot been executed,So no err_caller
+        # err_caller = self.get_all_errors_for_func(caller)
         err_callee = self.get_all_errors_for_func(callee)
         #print("DEBUG: err_caller= ",err_caller)
         #print("DEBUG: err_callee= ",err_callee)
@@ -183,8 +186,8 @@ class ErrorRegistry:
         for err in err_callee:
             # Look whether it is already known
             #print("err.stacktrace:",err.stacktrace)
-            if exclude_known and any(err.stacktrace.is_contained_in(err2.stacktrace) for err2 in err_caller):
-                continue
+            '''if exclude_known and any(err.stacktrace.is_contained_in(err2.stacktrace) for err2 in err_caller):
+                continue''' #no stack match is needed for EasyUSE
             result.add(err.errfile)
 
         return result

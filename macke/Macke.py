@@ -16,12 +16,12 @@ from progressbar import ProgressBar, widgets
 
 from .CallGraph import CallGraph
 from .config import (CONFIGFILE, THREADNUM, get_current_git_hash,
-                     get_klee_git_hash, get_llvm_opt_git_hash)
+                     get_klee_git_hash, get_llvm_opt_git_hash, TARGETFUNCTION)
 from .constants import UCLIBC_LIBS, FUZZFUNCDIR_PREFIX
 from .ErrorRegistry import ErrorRegistry
 from .Error import Error
 from .llvm_wrapper import (encapsulate_symbolic, optimize_redundant_globals,
-                           prepend_error_from_ktest,change_entry)
+                           prepend_error_from_ktest,change_entry,get_target_caller)
 from .threads import thread_phase_one, thread_fuzz_phase_one, thread_phase_two
 
 from .cgroups import get_cgroups
@@ -89,6 +89,9 @@ class Macke:
         # Generate the filename for the copy of the program
         self.program_bc = path.join(self.bcdir, "program.bc")
         self.symmains_bc = path.join(self.bcdir, "symmains.bc")
+
+        #jl :EasyUSE only
+        self.targetfunction=[]
 
         # Generate the directory containing all klee runs
         self.kleedir = path.join(self.rundir, "klee")
@@ -240,9 +243,30 @@ class Macke:
         # Fill a list of functions for the symbolic encapsulation
         tasks = self.callgraph.list_symbolic_encapsulable(
             removemain=not bool(self.posix4main))
-        print("DEBUG tasks=",tasks)
+        
+
+        #print("DEBUG tasks=",tasks)
         #jl set the target function
-        targettasks=["bottom"]
+        #targettasks=["main","do_time_formate","format_data","ctime_format","pred_fprintf","do_fprintf"]
+        print("number of function = ", len(tasks))
+        alltasks=tasks #record all the functions suit for symbolic
+        
+        #jl 
+        '''ignoretask=["get_token"]
+        for t in ignoretask:
+            if t in tasks:
+                tasks.remove(t)
+        if 'main' not in tasks:
+            tasks.append('main')'''
+
+        target_callers= get_target_caller(self.bitcodefile,"klee_change").split(',')
+        print("number of target_callers = ",len(target_callers))
+        for t in target_callers:
+            if t in tasks:
+                self.targetfunction.append(t)
+                print("debug----- target",t)
+        tasks=self.targetfunction
+        print("number of valid target_callers = ",len(tasks))
         #jl end
 
         self.qprint("Phase 1: %d of %d functions are suitable for symbolic "
@@ -254,10 +278,9 @@ class Macke:
         self.qprint("Phase 1: Adding new entry points ...", end="", flush=True)
 
         # Copy the program bc before encapsulating everything symbolically
-        shutil.copy2(self.program_bc, self.symmains_bc)
-
+        shutil.copy2(str(self.program_bc), str(self.symmains_bc))
         # Generate one bcfile with symbolic encapsulations for each function
-        for functionname in tasks:
+        for functionname in alltasks:
             if functionname != "main":
                 encapsulate_symbolic(self.symmains_bc, functionname)
                 #encapsulate_symbolic(self.symmains_bc, functionname,self.symmains_bc+'-'+functionname+'.bc')
@@ -323,6 +346,7 @@ class Macke:
 
         for run in runs:
             # all pairs inside a run can be executed in parallel
+            print("$$$  run:",run)
             totallyskipped += self.__execute_in_parallel_threads(run, 2, pbar)
 
         if not self.quiet:
@@ -486,29 +510,40 @@ class Macke:
                     ))
             # You cannot skip anything in phase one -> 0 skips
         elif phase == 2:
+            #debug jl:
+            '''count =0
             for (caller, callee) in run:
-                print("DEBUG: caller=",caller,"callee=",callee)
-                kteststoprepend = (
-                    self.errorregistry.to_prepend_in_phase_two(
-                        caller, callee, self.exclude_known_from_phase_two))
-                #print("DEBUG: kteststoprepend = ",kteststoprepend)
-                if kteststoprepend:
-                    prepended_bcfile = get_chain_segment_bcname(
-                        self.bcdir, caller, callee)
-                    prepend_error_from_ktest(
-                        self.symmains_bc, callee, kteststoprepend,
-                        prepended_bcfile)
-                    optimize_redundant_globals(prepended_bcfile)
-
-                    pool.apply_async(thread_phase_two, (
-                        resultlist, caller, callee, prepended_bcfile,
-                        self.get_next_klee_directory(
-                            dict(phase=phase, bcfile=prepended_bcfile,
-                                 caller=caller, callee=callee)),
-                        self.flags_user, self.posixflags, self.posix4main
-                    ))
-                else:
+                print(caller,callee)
+                count=count+1
+            print("count of the function pairs = ",count)
+            print("targetfunction=",self.targetfunction)'''
+            for (caller, callee) in run:
+                #jl : EasyUSE analyze the targetfunctions and reachable functions
+                if(callee not in self.targetfunction ):
                     skipped += 1
+                else:
+                    self.targetfunction.append(caller)
+                    kteststoprepend = (
+                        self.errorregistry.to_prepend_in_phase_two(
+                            caller, callee, self.exclude_known_from_phase_two))
+                    #print("DEBUG: kteststoprepend = ",kteststoprepend)
+                    if kteststoprepend:
+                        prepended_bcfile = get_chain_segment_bcname(
+                            self.bcdir, caller, callee)
+                        prepend_error_from_ktest(
+                            self.symmains_bc, callee, kteststoprepend,
+                            prepended_bcfile)
+                        optimize_redundant_globals(prepended_bcfile)
+
+                        pool.apply_async(thread_phase_two, (
+                            resultlist, caller, callee, prepended_bcfile,
+                            self.get_next_klee_directory(
+                                dict(phase=phase, bcfile=prepended_bcfile,
+                                        caller=caller, callee=callee)),
+                            self.flags_user, self.posixflags, self.posix4main
+                        ))
+                    else:
+                        skipped += 1
         return skipped
 
     def register_passed_klee_runs(self, kleedones):

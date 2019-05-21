@@ -15,10 +15,14 @@ KLEEFLAGS = [
     "--posix-runtime",
     "--watchdog"
 ]
-#jl
-USEFLAGS = [
+#jl for main functions
+USE_MAIN_FLAGS = [
     "--libc=uclibc",
     "--posix-runtime"
+]
+#jl for isolute functions not named 
+USEFLAGS = [
+    "--libc=uclibc"
 ]
 
 UCLIBC_LIBS = [
@@ -30,7 +34,11 @@ FUZZFUNCDIR_PREFIX = "fuzz_out_"
 # A list of file extensions for errors that can be prepended by phase two
 #jl debug:more err should be added for use
 ERRORFILEEXTENSIONS = [
-    ".data.err", ".ctrl.err", ".unified.ptr.err", ".unified.abort.err", ".unified.external.err",
+    ".data.err", ".ctrl.err", ".unified.ptr.err", 
+    ".unified.abort.err", ".unified.external.err",
     ".unified.overshift.err", ".newintro.ptr.err",
+    ".ptr.err", ".free.err", ".assert.err", ".div.err", ".macke.err", ".fuzz.err"]
+USEERRORFILEEXTENSIONS = [
+    ".data.err", ".ctrl.err",
     ".ptr.err", ".free.err", ".assert.err", ".div.err", ".macke.err", ".fuzz.err"]
     #jl add .data.err  .ctrl.err

@@ -1,7 +1,0 @@
-Error: ERROR FROM /home/jl/deploy/macke/result/2019-04-16-14-54-11/klee/klee-out-3/test000003.macke.err
-Stack: 
-	#000000216 in __macke_error_right (argno0)
-	#100000141 in top (i)
-	#200000164 in __user_main (=1, =35860528)
-	#300000386 in __uClibc_main (argc=1, argv=35860528) at /home/jl/deploy/klee-uclibc/libc/misc/internals/__uClibc_main.c:401
-	#400000607 in macke_top_main (=1, =35860528)

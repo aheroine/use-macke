@@ -1,9 +1,0 @@
-Error: ASSERTION FAIL: i < 42
-Stack: 
-	#000000107 in bottom (i)
-	#100000125 in right (i)
-	#200000188 in __macke_error_right (argno0)
-	#300000141 in top (i)
-	#400000164 in __user_main (=1, =35860528)
-	#500000386 in __uClibc_main (argc=1, argv=35860528) at /home/jl/deploy/klee-uclibc/libc/misc/internals/__uClibc_main.c:401
-	#600000607 in macke_top_main (=1, =35860528)

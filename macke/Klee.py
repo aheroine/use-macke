@@ -16,7 +16,7 @@ from collections import OrderedDict
 from os import listdir, path, makedirs, killpg, getpgid, setsid
 
 from .config import KLEEBIN, USEBIN
-from .constants import ERRORFILEEXTENSIONS, KLEEFLAGS, USEFLAGS
+from .constants import ERRORFILEEXTENSIONS, KLEEFLAGS, USEFLAGS, USE_MAIN_FLAGS 
 
 
 # python implementation of timed check_output fails to kill klee correctly
@@ -243,9 +243,10 @@ def execute_use(
     """
     Execute USE on bcfile with the given flag and put the output in outdir
     """
-
     # use empty list as default flags
-    flags = [] if flags is None else flags
+    #jl set no flags here
+    '''flags = [] if flags is None else flags'''
+    flags = []
     #jl
     flags.append("-use")
     timeout = None
@@ -264,7 +265,7 @@ def execute_use(
     else:
         flags.append("--stats-write-interval=" + str(timeout - 2))
         flags.append("--istats-write-interval=" + str(timeout - 2))
-
+    
     # Build the posix flags
     posixflags = [] if posixflags is None else posixflags
     posix4main = [] if posix4main is None else posix4main
@@ -272,7 +273,10 @@ def execute_use(
     if analyzedfunc == "main":
         # the main function is handled a little bit differently
         #jl : no need for posix-runtime and uclibc for function not named "main"
-        flags.extend(USEFLAGS)
+        print("debug in the use of main function------")
+        print(posix4main)
+        print("end----")
+        flags.extend(USE_MAIN_FLAGS)
         posixflags.extend(posix4main)
         #jl
         '''command = ([USEBIN, "--output-dir=" + outdir] + flags +
@@ -281,6 +285,7 @@ def execute_use(
     else:
         #flags += ["--entry-point", "macke_%s_main" % analyzedfunc]
         #jl change the main function of bcfile 
+        flags.extend(USEFLAGS)
         newbcfile=bcfile+'_'+analyzedfunc+'_ChangeEntry.bc'
         change_entry(bcfile, "macke_"+analyzedfunc+"_main", newbcfile)
         bcfile=newbcfile

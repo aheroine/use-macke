@@ -1,6 +1,0 @@
-KLEE: ERROR: (location information missing) ASSERTION FAIL: i < 42
-KLEE: NOTE: now ignoring this error at this location
-KLEE: ERROR: (location information missing) ERROR FROM /home/jl/deploy/macke/result/2019-04-16-14-54-11/klee/klee-out-3/test000003.macke.err
-KLEE: NOTE: now ignoring this error at this location
-KLEE: ERROR: (location information missing) ERROR FROM /home/jl/deploy/macke/result/2019-04-16-14-54-11/klee/klee-out-3/test000002.assert.err
-KLEE: NOTE: now ignoring this error at this location

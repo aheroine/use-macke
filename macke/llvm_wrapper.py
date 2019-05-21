@@ -4,7 +4,7 @@ Functions, that wraps all llvm actions and transformation into python functions
 import json
 import subprocess
 
-from .config import LIBMACKEOPT, LLVMOPT
+from .config import LIBMACKEOPT, LLVMOPT,LIBUSEOPT,LLVMOPT6
 
 
 def __run_subprocess(popenargs):
@@ -146,3 +146,10 @@ def extract_lines_of_code(bitcodefile):
     return __run_subprocess_json_output([
         LLVMOPT, "-load", LIBMACKEOPT,
         "-extractlinesofcode", bitcodefile, "-disable-output"])
+
+
+def get_target_caller(bitcodefile, target):
+      output =  __run_subprocess([
+        LLVMOPT6, "-load", LIBUSEOPT,
+        "-target_caller", "-target=%s" % target,bitcodefile, "-disable-output"])
+      return output.decode('utf8')

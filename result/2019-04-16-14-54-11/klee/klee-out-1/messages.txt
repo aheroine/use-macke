@@ -1,2 +1,0 @@
-KLEE: ERROR: (location information missing) ASSERTION FAIL: i < 42
-KLEE: NOTE: now ignoring this error at this location

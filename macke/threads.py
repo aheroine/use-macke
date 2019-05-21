@@ -41,6 +41,7 @@ def thread_phase_one(
         '''
         resultlist.append(execute_use(
             symmains_bc, functionname, outdir, flags, posixflags, posix4main))
+        
     # pylint: disable=broad-except
     except Exception as exc:
         print()
