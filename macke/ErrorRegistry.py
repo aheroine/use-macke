@@ -6,7 +6,7 @@ from os import listdir, path
 from .constants import ERRORFILEEXTENSIONS, USEERRORFILEEXTENSIONS #jl
 from .Error import Error
 from .ErrorChain import ErrorChain
-
+from .config import TARGETFUNCTION #jl
 
 class ErrorRegistry:
     """
@@ -54,6 +54,9 @@ class ErrorRegistry:
         """ Create a new error and add it to the registry """
         err = Error(errfile, entryfunction)
 
+
+        #print('create_entry',"-------------------------",errfile)
+
         if not err.is_blacklisted():
             self.register_error(err)
 
@@ -84,22 +87,25 @@ class ErrorRegistry:
 
     def register_error(self, error):
         """ register an existing error """
-
+        print("--------------------------------\n",error,"\n", error.errfile)
         if error.stacktrace.get_depth() == 0:
             print("Error with empty stack: " + error.errfile)
             return
-
+        
         if error.errfile.endswith(".macke.err"):
             # Find the prepended error
             # "ERROR FROM /path/test0000001.ptr.err"
+            #print("!!!!!error.errfile================================",error.errfile)
+          
             testfrom = error.reason[len("ERROR FROM "):].strip()
+            print("Debug:testfrom======",testfrom,"\n")
+            
 
             # Exclude all MACKE errors based on black listed errors
             if testfrom not in self.forerrfile:
                 print("testfrom not found...: " + testfrom)
                 print("error.errfile: " + error.errfile)
                 return
-
 
             self.mackerrorcounter += 1
             add_to_listdict(self.mackeforerrfile, testfrom, error)
@@ -160,8 +166,25 @@ class ErrorRegistry:
         """
         if function not in self.forfunction:
             return set()
-
         return self.forfunction[function]
+
+    def parse_error_file(self, filename, target_function):
+        print('parse_error_file:',filename)
+        f = open(filename)
+        lines = f.readlines()
+        error_type = "Error: ERROR FROM "+filename+"\n"
+        stack = []
+        for i in range(1, len(lines)):
+            if lines[i].startswith("Stack:"):
+                for j in range(i + 1, len(lines)):
+                    stack.append(lines[j])
+                    if "in %s" % target_function in lines[j]:
+                        break
+        f.close()
+        with open(filename+".stack", 'w') as new_f:
+            new_f.write(error_type)
+            new_f.write(''.join(stack))
+        return filename+".stack"
 
     def to_prepend_in_phase_two(self, caller, callee, exclude_known=True):
         """
@@ -169,12 +192,15 @@ class ErrorRegistry:
         analysis from caller. All these ktests belongs to a vulnerable
         instruction, that was not covered by an error from caller
         """
+        pcresult = ""
+        stackresult = ""
         #print("---debug----",self.forfunction)
         if callee not in self.forfunction:
-            return set()
+            return set(),pcresult,stackresult
 
         #when EasyUSE execute the targetSymbolicExecution, the caller hasnot been executed,So no err_caller
-        # err_caller = self.get_all_errors_for_func(caller)
+        if(len(TARGETFUNCTION)>=0):
+            err_caller = self.get_all_errors_for_func(caller)
         err_callee = self.get_all_errors_for_func(callee)
         #print("DEBUG: err_caller= ",err_caller)
         #print("DEBUG: err_callee= ",err_callee)
@@ -183,14 +209,45 @@ class ErrorRegistry:
         #if you don't want to compare the StraceTrace of the caller and callee,just set exclude_kown =False
         #but use can make use of the call stacke comparision design now!
         #exclude_known = False
+
+        '''
+        print("xxxxxxxxxxxxxxxxxxxxxxxxerr_calleexxxxxxxxxxxxx")
+        for err in err_callee:
+            print(err.errfile)
+        
+        print("xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx")
+        '''
+
         for err in err_callee:
             # Look whether it is already known
             #print("err.stacktrace:",err.stacktrace)
-            '''if exclude_known and any(err.stacktrace.is_contained_in(err2.stacktrace) for err2 in err_caller):
-                continue''' #no stack match is needed for EasyUSE
+            if(len(TARGETFUNCTION)==0):
+                if exclude_known and any(err.stacktrace.is_contained_in(err2.stacktrace) for err2 in err_caller):
+                    continue #no stack match is needed for EasyUSE
+            #jl
+            stackfile = self.parse_error_file(err.errfile, callee)
+            pcfile=err.errfile.split('.')[0]+".pc"
+            if(pcresult==""):
+                pcresult=pcfile
+                stackresult=stackfile
+            else:
+                pcresult = pcresult + "," + pcfile
+                stackresult = stackresult+ ','+stackfile
+            #
             result.add(err.errfile)
+        #jl collect the pc
+        
+        '''kleeoutdir= path.dirname(err.errfile)
+        for  filename in listdir(kleeoutdir):
+            if filename.endswith("pc"):
 
-        return result
+                stackfile = parse_error_file(errfile,callee)
+                if(pcresult==""):
+                    pcresult=(path.join(kleeoutdir, filename))
+                else:
+                    pcresult = pcresult + "," + (path.join(kleeoutdir, filename))'''
+
+        return result, pcresult, stackresult
 
 
 def add_to_listdict(dictionary, key, value):

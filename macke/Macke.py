@@ -258,14 +258,17 @@ class Macke:
                 tasks.remove(t)
         if 'main' not in tasks:
             tasks.append('main')'''
-
-        target_callers= get_target_caller(self.bitcodefile,"klee_change").split(',')
-        print("number of target_callers = ",len(target_callers))
-        for t in target_callers:
-            if t in tasks:
-                self.targetfunction.append(t)
-                print("debug----- target",t)
-        tasks=self.targetfunction
+        if(len(TARGETFUNCTION)>0):
+            print("\n___only target function are analysised in the first phase___")
+            target_callers= get_target_caller(self.bitcodefile,"klee_change").split(',')
+            print("number of target_callers = ",len(target_callers))
+            for t in target_callers:
+                if t in tasks:
+                    self.targetfunction.append(t)
+                    print("debug----- target",t)
+            tasks=self.targetfunction
+        else:
+            print("\n__all the functions will be analysised in the first phase___")
         print("number of valid target_callers = ",len(tasks))
         #jl end
 
@@ -519,14 +522,17 @@ class Macke:
             print("targetfunction=",self.targetfunction)'''
             for (caller, callee) in run:
                 #jl : EasyUSE analyze the targetfunctions and reachable functions
-                if(callee not in self.targetfunction ):
+                if(len(TARGETFUNCTION)>0 and callee not in self.targetfunction ):
                     skipped += 1
                 else:
                     self.targetfunction.append(caller)
-                    kteststoprepend = (
+                    #jl add a para to specify the pcfile:pctoprepend  stackprepend
+                    # ::a string split the .pc file dir with ","
+                    kteststoprepend, pctoprepend, stackprepend = (
                         self.errorregistry.to_prepend_in_phase_two(
                             caller, callee, self.exclude_known_from_phase_two))
-                    #print("DEBUG: kteststoprepend = ",kteststoprepend)
+                    #print("DEBUG: kteststoprepend = ",kteststoprepend,"\n")
+                    #print("DEBUG: pctoprepend = ",pctoprepend,"\n")
                     if kteststoprepend:
                         prepended_bcfile = get_chain_segment_bcname(
                             self.bcdir, caller, callee)
@@ -534,9 +540,10 @@ class Macke:
                             self.symmains_bc, callee, kteststoprepend,
                             prepended_bcfile)
                         optimize_redundant_globals(prepended_bcfile)
-
+                        
+                        #jl add a para to specify the pcfile
                         pool.apply_async(thread_phase_two, (
-                            resultlist, caller, callee, prepended_bcfile,
+                            resultlist, caller, callee, prepended_bcfile,pctoprepend,stackprepend,
                             self.get_next_klee_directory(
                                 dict(phase=phase, bcfile=prepended_bcfile,
                                         caller=caller, callee=callee)),

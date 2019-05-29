@@ -221,9 +221,9 @@ def execute_klee(
     # Return a filled result container
     return KleeResult(bcfile, analyzedfunc, outdir, out, flags)
 
-
+#jl add a para to specify the pcfile
 def execute_klee_targeted_search(
-        bcfile, analyzedfunc, targetfunc, outdir,
+        bcfile, analyzedfunc, targetfunc, pcfile, stackfile, outdir,
         flags=None, posixflags=None, posix4main=None):
     """
     Execute KLEE on a bitcode file with sonar search for targetfunc call
@@ -231,8 +231,21 @@ def execute_klee_targeted_search(
 
     # use empty list as default flags
     flags = [] if flags is None else flags
-    flags = ["--search=sonar", "--sonar-target=function-call", "--sonar-target-info=" + targetfunc] + flags
-    print("DEBUG:TARGETED_SEARCH:",bcfile, analyzedfunc, outdir, flags, posixflags, posix4main)
+
+    #jl add a para "--pcfile=" to specify the pcfile
+    #jl add para "--target-function=" to specify the target function name
+    '''flags = ["--search=sonar", "--sonar-target=function-call", "--sonar-target-info=" +
+     targetfunc ] + flags
+    '''
+    flags = ["--search=sonar", "--sonar-target=function-call", "--sonar-target-info=" +
+    targetfunc,"--target-function="+ targetfunc, "--pcs="+pcfile ,
+    "--error_files="+stackfile] + flags
+    
+    '''flags = ["--search=sonar", "--sonar-target=function-call", "--sonar-target-info=" +
+     targetfunc,"--target-function="+ targetfunc, "--pcs="+pcfile, "--stacks"+stacks ] + flags'''
+     #Todo: by ailu
+     # for every difference, a .pc and a .stack is generated, and the ErrMessage of the differnece is in first line of .stack
+    print("\nDEBUG:TARGETED_SEARCH:",bcfile, analyzedfunc, outdir, flags, posixflags, posix4main)
     return execute_klee(
         bcfile, analyzedfunc, outdir, flags, posixflags, posix4main)
 

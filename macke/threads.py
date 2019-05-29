@@ -52,17 +52,18 @@ def thread_phase_one(
         print(sys.exc_info())
         traceback.print_tb(sys.exc_info()[2])
 
-
+#jl add a para to specify the pcfile
 def thread_phase_two(
-        resultlist, caller, callee, prepended_bc, outdir,
+        resultlist, caller, callee, prepended_bc, pcfile,stackfile, outdir,
         flags, posixflags, posix4main):
     """
     This function is executed by the parallel processes in phase two
     """
     # And run klee on it
     try:
+        #jl add a para to specify the pcfile
         resultlist.append(execute_klee_targeted_search(
-            prepended_bc, caller, "__macke_error_" + callee, outdir,
+            prepended_bc, caller, "__macke_error_" + callee, pcfile,stackfile, outdir,
             flags, posixflags, posix4main))
     # pylint: disable=broad-except
     except Exception as exc:
