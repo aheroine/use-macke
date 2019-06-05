@@ -1,3 +1,4 @@
+README.md
 macke/Asan.py
 macke/CallGraph.py
 macke/Error.py
@@ -14,6 +15,7 @@ macke/cgroups.py
 macke/config.py
 macke/constants.py
 macke/llvm_wrapper.py
+macke/parse_error_file.py
 macke/run_istats.py
 macke/threads.py
 macke.egg-info/PKG-INFO
