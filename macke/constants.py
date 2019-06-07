@@ -35,6 +35,7 @@ FUZZFUNCDIR_PREFIX = "fuzz_out_"
 #jl debug:more err should be added for use
 ERRORFILEEXTENSIONS = [
     ".data.err", ".ctrl.err", ".unified.ptr.err", 
+    "newintro.ptr.err","fixed.ptr.err",
     ".unified.abort.err", ".unified.external.err",".unified.div.err",
     ".unified.overshift.err", ".newintro.ptr.err",
     ".ptr.err", ".free.err", ".assert.err", ".div.err", ".macke.err", ".fuzz.err"]
