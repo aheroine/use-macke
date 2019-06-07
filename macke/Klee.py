@@ -313,7 +313,7 @@ def execute_use(
     # actually run KLEE
     try:
         #jl
-        #print("\n"+"DEBUG run klee: command=",command)
+        print("\n"+"DEBUG run klee: command=",command)
         out = _check_output(
             command, cwd=tmpdir,
             timeout=timeout).decode("utf-8", 'ignore')
