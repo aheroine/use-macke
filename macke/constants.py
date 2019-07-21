@@ -13,16 +13,7 @@ KLEEFLAGS = [
     # "--output-module",  # Helpful for debugging
     "--output-source=false",  # Removing this is helpful for debugging
     "--posix-runtime",
-    "--watchdog"
-]
-#jl for main functions
-USE_MAIN_FLAGS = [
-    "--libc=uclibc",
-    "--posix-runtime"
-]
-#jl for isolute functions not named 
-USEFLAGS = [
-    "--libc=uclibc"
+    #"--watchdog"
 ]
 
 UCLIBC_LIBS = [
@@ -32,14 +23,5 @@ UCLIBC_LIBS = [
 FUZZFUNCDIR_PREFIX = "fuzz_out_"
 
 # A list of file extensions for errors that can be prepended by phase two
-#jl debug:more err should be added for use
 ERRORFILEEXTENSIONS = [
-    ".data.err", ".ctrl.err", ".unified.ptr.err", 
-    "newintro.ptr.err","fixed.ptr.err",
-    ".unified.abort.err", ".unified.external.err",".unified.div.err",
-    ".unified.overshift.err", ".newintro.ptr.err",
-    ".ptr.err", ".free.err", ".assert.err", ".div.err", ".macke.err", ".fuzz.err"]
-USEERRORFILEEXTENSIONS = [
-    ".data.err", ".ctrl.err",".unified.div.err",
-    ".ptr.err", ".free.err", ".assert.err", ".div.err", ".macke.err", ".fuzz.err"]
-    #jl add .data.err  .ctrl.err
+    ".ptr.err", ".user.err", ".free.err", ".assert.err", ".div.err", ".macke.err", ".fuzz.err"]

@@ -4,7 +4,7 @@ Functions, that wraps all llvm actions and transformation into python functions
 import json
 import subprocess
 
-from .config import LIBMACKEOPT, LLVMOPT,LIBUSEOPT,LLVMOPT6
+from .config import LIBMACKEOPT, LLVMOPT
 
 
 def __run_subprocess(popenargs):
@@ -56,27 +56,12 @@ def encapsulate_symbolic(sourcefile, function, destfile=None):
         "-encapsulatesymbolic", sourcefile,
         "-encapsulatedfunction", function, "-o", destfile])
 
-#jl add
-def change_entry(sourcefile, function, destfile=None):
-    """
-    Wrapper around the encapsulate symbolic pass
-    """
-    # If no destfile is given, just modify the source file
-    if destfile is None:
-        destfile = sourcefile
-
-    return __run_subprocess([
-        LLVMOPT, "-load", LIBMACKEOPT,
-        "-changeentrypoint", sourcefile,
-        "-newentryfunction", function, "-o", destfile])
-
 
 def prepend_error_from_dir(sourcefile, function, errordirlist, destfile=None):
     """
     Wrapper around the prepend error pass
     """
     # Reject empty error lists
-    print("DEBUG: ","prepend_error_from_dir",sourcefile,function,errordirlist,destfile)
     assert errordirlist
 
     # If no destfile is given, just modify the source file
@@ -98,8 +83,8 @@ def prepend_error_from_ktest(sourcefile, function, ktestlist, destfile=None):
     Wrapper around the prepend error pass
     """
     # Reject empty ktest lists
-    
     assert ktestlist
+    print('ktestlist',ktestlist)
 
     # If no destfile is given, just modify the source file
     if destfile is None:
@@ -109,6 +94,7 @@ def prepend_error_from_ktest(sourcefile, function, ktestlist, destfile=None):
     for ktest in ktestlist:
         ktestflags.append("-errorfiletoprepend")
         ktestflags.append(ktest)
+
     return __run_subprocess([
         LLVMOPT, "-load", LIBMACKEOPT, "-preprenderror", sourcefile,
         "-prependtofunction", function] + ktestflags + ["-o", destfile])
@@ -146,10 +132,3 @@ def extract_lines_of_code(bitcodefile):
     return __run_subprocess_json_output([
         LLVMOPT, "-load", LIBMACKEOPT,
         "-extractlinesofcode", bitcodefile, "-disable-output"])
-
-
-def get_target_caller(bitcodefile, target):
-      output =  __run_subprocess([
-        LLVMOPT6, "-load", LIBUSEOPT,
-        "-target_caller", "-target=%s" % target,bitcodefile, "-disable-output"])
-      return output.decode('utf8')

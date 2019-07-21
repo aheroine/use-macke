@@ -29,22 +29,8 @@ VALGRIND = path.expanduser(CONFIG.get("binaries", "valgrind"))
 # for symbolic execution
 LIBMACKEOPT = path.expanduser(CONFIG.get("binaries", "libmackeopt"))
 LLVMOPT = path.expanduser(CONFIG.get("binaries", "llvmopt", fallback="opt"))
-
-LIBUSEOPT = path.expanduser(CONFIG.get("binaries", "libuseopt"))
-
-LLVMOPT6 = path.expanduser(CONFIG.get("binaries", "llvmopt6", fallback="opt-6.0"))
-
 KLEEBIN = path.expanduser(CONFIG.get("binaries", "klee", fallback="klee"))
-#jl
-USEBIN = path.expanduser(CONFIG.get("binaries", "use", fallback="klee"))
-TargetFunctionFile = path.expanduser(CONFIG.get("binaries", "targetfunction", fallback="targetfunction.txt"))
-TARGETFUNCTION=[]
-fin = open(TargetFunctionFile,'r',encoding='UTF-8')
-for eachLine in fin.readlines():
-    #line = eachLine.strip().replace('\uteff','')
-    #print("eachLine=",eachLine)
-    TARGETFUNCTION.append(eachLine.strip())
-fin.close()
+
 # general
 THREADNUM = CONFIG.getint("runtime", "threadnum", fallback=None)
 FUZZMEMLIMIT = CONFIG.getint("runtime", "memlimit", fallback=50)
@@ -97,17 +83,7 @@ def check_config():
     khelp = __get_output_from([KLEEBIN, "-help"])
     if any(t not in khelp for t in [b"=sonar", b"-sonar-target", b"-sonar-target-info=<string>"]):
         raise Exception("Config: klee does not support sonar search")
-    #jl
-    # Check, if USEBIN
-    if not path.isfile(USEBIN):
-        raise Exception("Config: Invalid KLEE binary")
-    kvers = __get_output_from([USEBIN, "-version"])
-    if b"KLEE" not in kvers or b"LLVM version 3.4.2" not in kvers:
-        raise Exception("Config: Invalid klee version")
-    khelp = __get_output_from([USEBIN, "-help"])
-    if any(t not in khelp for t in [b"-use"]):
-        raise Exception("Config: klee does not support use")
-    #jl --
+
     # Check, if a reasonable number of threads is used
     if THREADNUM is not None and not 0 < THREADNUM < 128:
         raise Exception("Config: Invalid Number of threads")
@@ -148,11 +124,3 @@ def get_klee_git_hash():
     if the binary is inside the git repository
     """
     return get_current_git_hash_from(path.dirname(KLEEBIN))
-
-#jl
-def get_use_git_hash():
-    """
-    Tries to get the git hash of currently checket out version of klee,
-    if the binary is inside the git repository
-    """
-    return get_current_git_hash_from(path.dirname(USEBIN))

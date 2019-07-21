@@ -84,6 +84,7 @@ class Shamrock:
         """
         Run all consecutive steps of the analysis
         """
+
         self.run_initialization()
         self.run_klee()
         self.run_finalization()

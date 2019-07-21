@@ -89,9 +89,6 @@ def get_error_registry_for_mackedir(macke_directory, callgraph):
     """
     Build an error Registry for a MACKE run
     """
-    print("DEBUG--------------")
-    print("macke_directory:",macke_directory)
-    print("callgraph:",callgraph)
     Error.set_program_functions(callgraph.get_internal_functions())
     macke_directory = path.abspath(macke_directory)
     registry = ErrorRegistry()
@@ -113,8 +110,6 @@ def generic_main(description, feedback, filename, callback):
     Entry point to run an analyse-script stand alone. It reads a MACKE
     directory, perform the analysis and store the result as a json file.
     """
-    print("debug---------")
-    print(description,feedback,filename,callback)
     mackedir = arg_parse_mackedir(description)
     store_as_json(mackedir, filename, callback(mackedir))
     if feedback:
